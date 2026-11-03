@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIGICLASS Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #334155; padding: 10px; text-align: left; }
+        th { background: #1e293b; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 5px; }
+        button:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+
+    <h1>Aplikasi DIGICLASS</h1>
+    <p>Status: Terhubung ke Database Lokal</p>
+    
+    <!-- Tombol untuk memicu pengambilan data -->
+    <button onclick="ambilDataUser()">Muat Data Pengguna</button>
+
+    <!-- Tempat untuk menampilkan data dari Google Sheets -->
+    <div id="hasil-data">
+        <p>Belum ada data yang dimuat...</p>
+    </div>
+
+    <!-- Panggil file JavaScript utama Anda -->
+    <script src="script.js"></script>
+</body>
+</html>
