@@ -18,6 +18,30 @@
     <h1>Aplikasi DIGICLASS</h1>
     <p>Status: Terhubung ke Database Lokal</p>
     
+    <!-- FORMULIR INPUT ABSENSI (BARU) -->
+    <div class="card">
+        <h3>Formulir Absensi</h3>
+        <form id="form-absensi" onsubmit="kirimAbsensi(event)">
+            <input type="text" id="nim" placeholder="Masukkan NIM" required>
+            <input type="text" id="nama" placeholder="Masukkan Nama Lengkap" required>
+            <select id="status">
+                <option value="Hadir">Hadir</option>
+                <option value="Izin">Izin</option>
+                <option value="Sakit">Sakit</option>
+            </select>
+            <button type="submit">Kirim Absensi</button>
+        </form>
+        <p id="pesan-status" style="margin-top: 10px; font-size: 14px;"></p>
+    </div>
+
+    <!-- TOMBOL & TABEL DATA -->
+    <div class="card">
+        <button onclick="ambilDataUser()">Muat Data dari Google Sheets</button>
+        <div id="hasil-data">
+            <p>Belum ada data yang dimuat...</p>
+        </div>
+    </div>
+    
     <!-- Tombol untuk memicu pengambilan data -->
     <button onclick="ambilDataUser()">Muat Data Pengguna</button>
 

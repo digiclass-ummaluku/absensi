@@ -94,6 +94,60 @@ app.get('/', (req, res) => {
     res.status(200).send('DIGICLASS Backend API is running smoothly on Vercel!');
 });
 
+// --- ENDPOINT POST UNTUK MENAMBAH DATA BARU KE GOOGLE SHEETS ---
+app.post('/api/data', async (req, res) => {
+    try {
+        // 1. Ambil data yang dikirim oleh frontend dari body permintaan
+        // Contoh format body: { "sheetName": "ABSENSI", "values": ["12345", "Budi", "Hadir", "2026-11-12"] }
+        const { sheetName, values } = req.body;
+
+        if (!sheetName || !values || !Array.isArray(values)) {
+            return res.status(400).json({ 
+                success: false, 
+                error: "Format data tidak valid. Harap sertakan 'sheetName' dan 'values' (berupa array)." 
+            });
+        }
+
+        // 2. Hubungkan ke Google Sheets menggunakan kredensial yang ada
+        const auth = new google.auth.GoogleAuth({
+            credentials: {
+                client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+                private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+            },
+            scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+        });
+
+        const client = await auth.getClient();
+        const googleSheets = google.sheets({ version: 'v4', auth: client });
+        const spreadsheetId = process.env.SPREADSHEET_ID;
+
+        // 3. Eksekusi perintah penambahan baris ke Google Sheets
+        const response = await googleSheets.spreadsheets.values.append({
+            auth,
+            spreadsheetId,
+            range: `${sheetName}!A:Z`, // Menargetkan sheet tujuan
+            valueInputOption: 'USER_ENTERED', // Agar format angka/tanggal otomatis dikenali Google Sheets
+            resource: {
+                values: [values], // Data baris baru yang ingin dimasukkan
+            },
+        });
+
+        // 4. Kirim respons sukses kembali ke frontend
+        return res.status(200).json({
+            success: true,
+            message: "Data absensi berhasil ditambahkan ke Google Sheets!",
+            updates: response.data.updates,
+        });
+
+    } catch (error) {
+        console.error("Error saat menulis data:", error);
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {

@@ -46,3 +46,54 @@ async function ambilDataUser() {
         container.innerHTML = `<p style="color: red;">Gagal terhubung ke backend: ${error.message}</p>`;
     }
 }
+
+// Fungsi untuk mengirim data absensi baru ke backend API
+async function kirimAbsensi(event) {
+    event.preventDefault(); // Mencegah halaman melakukan refresh otomatis
+
+    const nim = document.getElementById('nim').value;
+    const nama = document.getElementById('nama').value;
+    const status = document.getElementById('status').value;
+    const pesanStatus = document.getElementById('pesan-status');
+    
+    // Mendapatkan tanggal hari ini secara otomatis (Format: YYYY-MM-DD)
+    const tanggal = new Date().toISOString().split('T')[0];
+
+    pesanStatus.style.color = "#38bdf8";
+    pesanStatus.innerText = "Mengirim data ke Google Sheets...";
+
+    try {
+        // Melakukan request POST ke backend API kita
+        const response = await fetch('/api/data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                sheetName: "ABSENSI", // Pastikan nama sheet ini ada di Google Sheets Anda
+                values: [nim, nama, status, tanggal]
+            })
+        });
+
+        const hasil = await response.json();
+
+        if (hasil.success) {
+            pesanStatus.style.color = "#4ade80";
+            pesanStatus.innerText = "Berhasil! Absensi telah tercatat di Google Sheets.";
+            
+            // Reset form setelah berhasil
+            document.getElementById('form-absensi').reset();
+            
+            // Otomatis muat ulang data tabel jika fungsi ambilDataUser sudah ada
+            // ambilDataUser(); 
+        } else {
+            pesanStatus.style.color = "#f87171";
+            pesanStatus.innerText = "Gagal: " + hasil.error;
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        pesanStatus.style.color = "#f87171";
+        pesanStatus.innerText = "Terjadi kesalahan jaringan: " + error.message;
+    }
+}
